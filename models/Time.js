@@ -20,10 +20,9 @@ const TimeSchema = new Schema({
   name: {
     type: String,
   },
-});
-
-TimeSchema.virtual('duration').get(function () {
-  return this.end - this.start;
+  duration: {
+    type: Number,
+  },
 });
 
 module.exports = mongoose.model('Time', TimeSchema);

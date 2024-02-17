@@ -19,6 +19,7 @@ exports.end = async function (req, res) {
   const time = await Time.findOne({ sessionId });
   if (!time) return res.json('Session not found');
   time.end = Date.now();
+  time.duration = time.end - time.start;
   await time.save().catch((err) => res.json({ status: 'Error ending time', msg: err.message }));
   res.json({ message: 'time Ended', duration: time.duration });
 };
@@ -28,9 +29,14 @@ exports.saveTime = async function (req, res) {
   const sessionId = req.params.sessionId;
   const name = req.params.name;
   const time = await Time.findOne({ sessionId });
+
   if (!time) return res.json('Session not found');
   time.shouldSave = true;
   time.name = name;
   await time.save().catch((err) => res.json({ status: 'Error saving time', msg: err.message }));
-  res.json({ message: 'Time saved', duration: time.duration, name: time.name });
+  const top5 = await Time.find({}).sort({ duration: 1 }).limit(5);
+  const top5times = top5.map((time) => {
+    return { name: time.name, duration: time.duration };
+  });
+  res.json({ message: 'Time saved', duration: time.duration, name: time.name, top5: top5times });
 };
