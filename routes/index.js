@@ -5,6 +5,7 @@ const {
   getImageSize,
   getImageURL,
   getPuzzles,
+  getPuzzle,
 } = require('../controllers/puzzle');
 const { getTime, start, end, save, saveTime } = require('../controllers/time');
 var router = express.Router();
@@ -19,6 +20,7 @@ router.get('/test/', function (req, res, next) {
 });
 
 router.post(`/puzzle/:id/guess/`, guessCharacter);
+router.get('/puzzle/:id', getPuzzle);
 
 router.get('/puzzles', getPuzzles);
 

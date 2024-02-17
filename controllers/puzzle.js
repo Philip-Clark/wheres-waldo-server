@@ -21,6 +21,16 @@ exports.getPuzzles = async function (req, res) {
   res.json(puzzles);
 };
 
+exports.getPuzzle = async function (req, res) {
+  const puzzleId = req.params.id;
+  const puzzle = await Puzzle.findById(puzzleId).populate('characters', 'name image -_id');
+  if (!puzzle) return res.json('Puzzle not found');
+  puzzle.characters.forEach((character) => {
+    character.image = url + character.image;
+  });
+  res.json(puzzle);
+};
+
 exports.getImageSize = async function (req, res) {
   const puzzleId = req.params.id;
   const puzzle = await Puzzle.findById(puzzleId);
