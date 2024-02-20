@@ -7,7 +7,7 @@ const {
   getPuzzles,
   getPuzzle,
 } = require('../controllers/puzzle');
-const { getTime, start, end, save, saveTime } = require('../controllers/time');
+const { getTime, start, end, save, saveTime, getTopTimes } = require('../controllers/time');
 var router = express.Router();
 
 /* GET home page. */
@@ -31,6 +31,7 @@ router.get('/puzzle/:id/imageURL', getImageURL);
 router.get('/time/:sessionId', getTime);
 router.post('/time/start/:sessionId', start);
 router.post('/time/end/:sessionId', end);
-router.post('/time/save/:sessionId/:name', saveTime);
+router.post('/time/save/:sessionId/:name/:puzzleId', saveTime);
+router.get('/time/top/:puzzleID', getTopTimes);
 
 module.exports = router;

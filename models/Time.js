@@ -23,6 +23,9 @@ const TimeSchema = new Schema({
   duration: {
     type: Number,
   },
+  puzzleId: {
+    type: String,
+  },
 });
 
 module.exports = mongoose.model('Time', TimeSchema);

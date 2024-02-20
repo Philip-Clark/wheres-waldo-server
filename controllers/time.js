@@ -10,8 +10,10 @@ exports.start = async function (req, res) {
   let time = await Time.findOne({ sessionId });
   if (!time) time = new Time({ sessionId });
   time.start = Date.now();
-  await time.save().catch((err) => res.json({ status: 'Error starting time', msg: err.message }));
-  res.json('Time started');
+  await time.save().catch((err) => {
+    return res.json({ status: 'Error starting time', msg: err.message });
+  });
+  return res.json({ message: 'time Started' });
 };
 
 exports.end = async function (req, res) {
@@ -20,7 +22,9 @@ exports.end = async function (req, res) {
   if (!time) return res.json('Session not found');
   time.end = Date.now();
   time.duration = time.end - time.start;
-  await time.save().catch((err) => res.json({ status: 'Error ending time', msg: err.message }));
+  await time.save().catch((err) => {
+    return res.json({ status: 'Error ending time', msg: err.message });
+  });
   res.json({ message: 'time Ended', duration: time.duration });
 };
 
@@ -28,15 +32,22 @@ exports.saveTime = async function (req, res) {
   if (!req.params.name) return res.json('Name is required');
   const sessionId = req.params.sessionId;
   const name = req.params.name;
+  const puzzleId = req.params.puzzleId;
   const time = await Time.findOne({ sessionId });
 
   if (!time) return res.json('Session not found');
   time.shouldSave = true;
   time.name = name;
-  await time.save().catch((err) => res.json({ status: 'Error saving time', msg: err.message }));
-  const top5 = await Time.find({}).sort({ duration: 1 }).limit(5);
-  const top5times = top5.map((time) => {
-    return { name: time.name, duration: time.duration };
+  time.puzzleId = puzzleId;
+  await time.save().catch((err) => {
+    return res.json({ status: 'Error saving time', msg: err.message });
   });
-  res.json({ message: 'Time saved', duration: time.duration, name: time.name, top5: top5times });
+  res.json({ message: 'Time saved', duration: time.duration, name: time.name });
+};
+
+exports.getTopTimes = async function (req, res) {
+  const id = req.params.puzzleID;
+  const top15 = await Time.find({ puzzleId: id, shouldSave: true }).sort({ duration: 1 }).limit(15);
+
+  res.json({ message: 'Top times', topTimes: top15 });
 };
